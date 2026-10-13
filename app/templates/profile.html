@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Profile - PhishGuard{% endblock %}
+{% block body_class %}has-layout{% endblock %}
+
+{% block content %}
+<div class="layout">
+    <aside class="sidebar">
+        <h2 class="logo">PhishGuard</h2>
+        <nav>
+            <a href="{{ url_for('dashboard.overview') }}">Overview</a>
+            <a href="{{ url_for('scanner.scan_url') }}">Scan URL</a>
+            <a href="{{ url_for('scanner.scan_file') }}">Scan File</a>
+            <a href="{{ url_for('history.scan_history') }}">Scan History</a>
+            <a href="{{ url_for('history.insights') }}">Security Insights</a>
+            <a href="{{ url_for('profile.view_profile') }}" class="active">Profile</a>
+            <a href="{{ url_for('auth.logout') }}">Logout</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <h1>My Profile</h1>
+
+        {% if message %}
+            <p class="message">{{ message }}</p>
+        {% endif %}
+
+        <div class="profile-info">
+            <p><strong>Name:</strong> {{ user.full_name }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <p><strong>Account Created:</strong> {{ user.created_at.strftime('%d %b %Y') }}</p>
+        </div>
+
+        <h3>Change Password</h3>
+        <form method="POST" class="profile-form">
+            <label>Current Password</label>
+            <input name="current_password" type="password" required>
+
+            <label>New Password</label>
+            <input name="new_password" type="password" required>
+
+            <label>Confirm New Password</label>
+            <input name="confirm_password" type="password" required>
+
+            <button type="submit">Update Password</button>
+        </form>
+    </main>
+</div>
+{% endblock %}

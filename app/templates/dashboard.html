@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - PhishGuard{% endblock %}
+{% block body_class %}has-layout{% endblock %}
+
+{% block content %}
+<div class="layout">
+    <aside class="sidebar">
+        <h2 class="logo">PhishGuard</h2>
+        <nav>
+            <a href="{{ url_for('dashboard.overview') }}" class="active">Overview</a>
+            <a href="{{ url_for('scanner.scan_url') }}">Scan URL</a>
+            <a href="{{ url_for('scanner.scan_file') }}">Scan File</a>
+            <a href="{{ url_for('history.scan_history') }}">Scan History</a>
+            <a href="{{ url_for('') }}">Scan Result</a>
+            <a href="{{ url_for('history.insights') }}">Security Insights</a>
+            <a href="{{ url_for('profile.view_profile') }}">Profile</a>
+            <a href="{{ url_for('auth.logout') }}">Logout</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <h1>Welcome back, {{ user.full_name }}</h1>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-number">{{ total_scans }}</span>
+                <span class="stat-label">Total Scans</span>
+            </div>
+            <div class="stat-card safe">
+                <span class="stat-number">{{ safe_count }}</span>
+                <span class="stat-label">Safe</span>
+            </div>
+            <div class="stat-card suspicious">
+                <span class="stat-number">{{ suspicious_count }}</span>
+                <span class="stat-label">Suspicious</span>
+            </div>
+            <div class="stat-card danger">
+                <span class="stat-number">{{ phishing_count }}</span>
+                <span class="stat-label">High Risk</span>
+            </div>
+        </div>
+
+        <a href="{{ url_for('scanner.scan_url') }}" class="scan-btn">Scan New URL</a>
+
+        <h3>Recent Scans</h3>
+        {% if recent_scans %}
+        <table>
+            <thead>
+                <tr>
+                    <th>URL / File</th>
+                    <th>Date</th>
+                    <th>Risk</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for scan in recent_scans %}
+                <tr>
+                    <td>{{ scan.url or scan.filename }}</td>
+                    <td>{{ scan.scanned_at.strftime('%d %b %Y, %H:%M') }}</td>
+                    <td>{{ scan.risk_score }}</td>
+                    <td>{{ scan.classification }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="empty-state">No scans yet. Run your first scan to see activity here.</p>
+        {% endif %}
+    </main>
+</div>
+{% endblock %}

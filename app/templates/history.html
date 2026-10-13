@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}Scan History - PhishGuard{% endblock %}
+{% block body_class %}has-layout{% endblock %}
+
+{% block content %}
+<div class="layout">
+    <aside class="sidebar">
+        <h2 class="logo">PhishGuard</h2>
+        <nav>
+            <a href="{{ url_for('dashboard.overview') }}">Overview</a>
+            <a href="{{ url_for('scanner.scan_url') }}">Scan URL</a>
+            <a href="{{ url_for('scanner.scan_file') }}">Scan File</a>
+            <a href="{{ url_for('history.scan_history') }}" class="active">Scan History</a>
+            <a href="{{ url_for('history.insights') }}">Security Insights</a>
+            <a href="{{ url_for('profile.view_profile') }}">Profile</a>
+            <a href="{{ url_for('auth.logout') }}">Logout</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <h1>Scan History</h1>
+
+        <form method="GET" class="filter-bar">
+            <input name="q" placeholder="Search URL or filename..." value="{{ search_query }}">
+
+            <select name="classification">
+                <option value="">All Classifications</option>
+                <option value="Safe" {% if classification_filter == "Safe" %}selected{% endif %}>Safe</option>
+                <option value="Suspicious" {% if classification_filter == "Suspicious" %}selected{% endif %}>Suspicious</option>
+                <option value="High Risk" {% if classification_filter == "High Risk" %}selected{% endif %}>High Risk</option>
+            </select>
+
+            <select name="sort">
+                <option value="date_desc" {% if sort == "date_desc" %}selected{% endif %}>Newest First</option>
+                <option value="date_asc" {% if sort == "date_asc" %}selected{% endif %}>Oldest First</option>
+                <option value="risk_desc" {% if sort == "risk_desc" %}selected{% endif %}>Highest Risk</option>
+                <option value="risk_asc" {% if sort == "risk_asc" %}selected{% endif %}>Lowest Risk</option>
+            </select>
+
+            <button type="submit">Apply</button>
+        </form>
+
+        {% if scans %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>URL / File</th>
+                        <th>Date</th>
+                        <th>Risk Score</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for scan in scans %}
+                    <tr>
+                        <td>{{ scan.url or scan.filename }}</td>
+                        <td>{{ scan.scanned_at.strftime('%d %b %Y, %H:%M') }}</td>
+                        <td>{{ scan.risk_score }}</td>
+                        <td>{{ scan.classification }}</td>
+                        <td class="actions-cell">
+                            <a href="{{ url_for('scanner.scan_result', scan_id=scan.id) }}">View</a>
+                            <form method="POST" action="{{ url_for('history.delete_scan', scan_id=scan.id) }}" onsubmit="return confirm('Delete this scan record?');">
+                                <button type="submit" class="delete-link">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="pagination">
+                {% if pagination.has_prev %}
+                    <a href="{{ url_for('history.scan_history', page=pagination.prev_num, q=search_query, classification=classification_filter, sort=sort) }}">Previous</a>
+                {% endif %}
+                <span>Page {{ pagination.page }} of {{ pagination.pages }}</span>
+                {% if pagination.has_next %}
+                    <a href="{{ url_for('history.scan_history', page=pagination.next_num, q=search_query, classification=classification_filter, sort=sort) }}">Next</a>
+                {% endif %}
+            </div>
+        {% else %}
+            <p class="empty-state">No scans found.</p>
+        {% endif %}
+    </main>
+</div>
+{% endblock %}

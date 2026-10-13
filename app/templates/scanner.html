@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Scan URL - PhishGuard{% endblock %}
+{% block body_class %}has-layout{% endblock %}
+
+{% block content %}
+<div class="layout">
+    <aside class="sidebar">
+        <h2 class="logo">PhishGuard</h2>
+        <nav>
+            <a href="{{ url_for('dashboard.overview') }}">Overview</a>
+            <a href="{{ url_for('scanner.scan_url') }}">Scan URL</a>
+            <a href="{{ url_for('scanner.scan_file') }}">Scan File</a>
+            <a href="{{ url_for('history.scan_history') }}">Scan History</a>
+            <a href="{{ url_for('history.insights') }}">Security Insights</a>
+            <a href="{{ url_for('profile.view_profile') }}">Profile</a>
+            <a href="{{ url_for('auth.logout') }}">Logout</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <h1>Scan a URL</h1>
+
+        {% if message %}
+        <p class="message">{{ message }}</p>
+        {% endif %}
+
+        <form method="POST" class="scan-form">
+            <input name="url" placeholder="https://example.com" required>
+            <button type="submit">Scan</button>
+        </form>
+    </main>
+</div>
+{% endblock %}

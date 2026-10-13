@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Security Insights - PhishGuard{% endblock %}
+{% block body_class %}has-layout{% endblock %}
+
+{% block content %}
+<div class="layout">
+    <aside class="sidebar">
+        <h2 class="logo">PhishGuard</h2>
+        <nav>
+            <a href="{{ url_for('dashboard.overview') }}">Overview</a>
+            <a href="{{ url_for('scanner.scan_url') }}">Scan URL</a>
+            <a href="{{ url_for('history.scan_history') }}">Scan History</a>
+            <a href="{{ url_for('history.insights') }}" class="active">Security Insights</a>
+            <a href="{{ url_for('profile.view_profile') }}">Profile</a>
+            <a href="{{ url_for('auth.logout') }}">Logout</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <h1>Security Insights</h1>
+
+        <div class="charts-grid">
+            <div class="chart-card">
+                <h3>Risk Score Trend</h3>
+                <canvas id="lineChart"></canvas>
+            </div>
+            <div class="chart-card">
+                <h3>Classification Distribution</h3>
+                <canvas id="doughnutChart"></canvas>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/insights.js') }}"></script>
+<script>
+    initInsightsCharts(
+        {{ chart_labels | tojson }},
+        {{ chart_scores | tojson }},
+        {{ safe_count }},
+        {{ suspicious_count }},
+        {{ high_risk_count }}
+    );
+</script>
+{% endblock %}
